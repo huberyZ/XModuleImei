@@ -1,0 +1,29 @@
+测试设备：nexus5（Android4.4.3）
+开发环境：Android studio3.4
+1、Android studio创建一个工程，不需要activity（xposed是一个模块）
+2、修改AndroidManifest.xml，在application中添加如下xposed模块描述：
+<!-- 使 xposed 模块有效 -->
+    <meta-data android:name="xposedmodule"
+        android:value="true"/>
+<!-- xposed 模块名称,我们可以随便起一个和模块功能相似的即可 -->
+    <meta-data android:name="xposeddescription"
+        android:value="HookImei"/>
+<!-- xposed 模块最低版本 -->
+    <meta-data android:name="xposedminversion"
+        android:value="54"/>
+3、XposedBridgeApi-xx.jar，这个在老的开发环境中需要把这个jar包放入libs，但是最新的Android studio中不需要，只需要在build.gradle中添加如下代码：
+repositories {
+    jcenter()    //这句代码是告诉AndroidStuido使用jcenter作为代码仓库，从这个仓库里远程寻找 de.robv.android.xposed:api:82 这个API
+}
+在dependencies里添加如下两行：
+compileOnly 'de.robv.android.xposed:api:82’
+compileOnly 'de.robv.android.xposed:api:82:sources'
+写完之后， build.gradle会提示文件已经修改，是否同步。点击 “sync now”，同步即可
+注：ps:如果网络不通，或者同步不畅，就不要进行第三步的repositories { jcenter()}这个步骤了，改做这个步骤：
+手动下载XposedBridgeApi-82.jar ，拖放到“项目名称/app/libs/”里面（不是网上说的单独建立lib文件夹，那是很久以前的故事了！），然后右键“Add As Library” 自行添加这个jar包。而compileOnly ‘de.robv.android.xposed:api:82′和 compileOnly ‘de.robv.android.xposed:api:82:sources’这两句仍然照常添加
+4、最后一步，添加入口点
+右键点击 “main ” 文件夹 ， 选择new –> Folder –>Assets Folder，新建assets 文件夹：
+然后右键点击 assets文件夹， new–> file，文件名为xposed_init（文件类型选text），并在其中写上入口类的完整路径（就是自己编写的那一个Hook类），这样， Xposed框架就能够从这个 xposed_init 读取信息来找到模块的入口，然后进行Hook操作了：
+
+5、然后，写hook模块，build，安装
+
